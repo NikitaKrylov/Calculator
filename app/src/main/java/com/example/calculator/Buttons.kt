@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ActionButton(text: String, modifier: Modifier){
+fun ActionButton(text: String, modifier: Modifier, onClick: () -> Unit){
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),
         contentPadding = PaddingValues(0.dp),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
@@ -38,9 +38,9 @@ fun ActionButton(text: String, modifier: Modifier){
 
 
 @Composable
-fun NumButton(text: String, modifier: Modifier){
+fun NumButton(text: String, modifier: Modifier, onClick: () -> Unit){
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { onClick() },
         border = BorderStroke(1.dp, Color.White),
         shape = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.6f)),
@@ -56,9 +56,9 @@ fun NumButton(text: String, modifier: Modifier){
 }
 
 @Composable
-fun SpecialActionButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier){
+fun SpecialActionButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier, onClick: () -> Unit){
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { onClick() },
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
         contentPadding = PaddingValues(0.dp),

@@ -54,6 +54,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -77,8 +78,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column(Modifier.padding(28.dp, 8.dp)) {
-                        ExpessionBlock(exprViewModel)
-                        ButtonsBlock()
+                        ExpessionBlock(exprViewModel.expression, exprViewModel.expressions.collectAsState())
+                        ButtonsBlock(exprViewModel::onAction)
                     }
                 }
             }
@@ -89,14 +90,14 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun ButtonsBlock() {
+fun ButtonsBlock(onAction: (CalculatorAction) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
         horizontalArrangement = Arrangement.spacedBy(17.dp),
         userScrollEnabled = false
     ){
         items(listOf("e", "u", "sin", "deg")) {
-            SpecialActionButton(text = it)
+            SpecialActionButton(text = it, onClick = { onAction(CalculatorAction.Symbol(it)) })
         }
     }
     Row(
@@ -116,11 +117,12 @@ fun ButtonsBlock() {
             ) {
 
                 items((1..9).toList()){
-                    NumButton(it.toString(), Modifier.aspectRatio(1f))
-                }
-                item{ NumButton("Ac", Modifier.aspectRatio(1f)) }
-                item{ NumButton("<-", Modifier.aspectRatio(1f)) }
-                item{ActionButton("/", Modifier.aspectRatio(1f))}
+                    NumButton(it.toString(), Modifier.aspectRatio(1f), onClick = {
+                        onAction(CalculatorAction.Symbol(it.toString()))
+                    })}
+                item{ NumButton("Ac", Modifier.aspectRatio(1f), onClick = { onAction(CalculatorAction.Clear) }) }
+                item{ NumButton("<-", Modifier.aspectRatio(1f), onClick = { onAction(CalculatorAction.Delete) }) }
+                item{ActionButton("/", Modifier.aspectRatio(1f), onClick = { onAction(CalculatorAction.Operation(CalculatorOperation.Divide)) })}
 
             }
             LazyHorizontalGrid(
@@ -130,10 +132,10 @@ fun ButtonsBlock() {
                 userScrollEnabled = false
             ){
                 item {
-                    NumButton(text = "0", Modifier.width(160.dp))
+                    NumButton(text = "0", Modifier.width(160.dp), onClick = { onAction(CalculatorAction.Symbol("0")) })
                 }
                 item {
-                    NumButton(text = ".", Modifier.width(70.dp))
+                    NumButton(text = ".", Modifier.width(70.dp), onClick = { onAction(CalculatorAction.Symbol(".")) })
                 }
             }
         }
@@ -147,14 +149,17 @@ fun ButtonsBlock() {
             verticalArrangement = Arrangement.spacedBy(20.dp),
             userScrollEnabled = false
             ) {
-            items(listOf("*", "-")){
-                ActionButton(text = it.toString(), Modifier.size(70.dp))
+            item{
+                ActionButton(text = "*", Modifier.size(70.dp), onClick = { onAction(CalculatorAction.Operation(CalculatorOperation.Multiply)) })
+            }
+            item{
+                ActionButton(text = "-", Modifier.size(70.dp), onClick = { onAction(CalculatorAction.Operation(CalculatorOperation.Minus)) })
             }
             item {
-                ActionButton(text = "+", Modifier.size(70.dp, 130.dp))
+                ActionButton(text = "+", Modifier.size(70.dp, 130.dp), onClick = { onAction(CalculatorAction.Operation(CalculatorOperation.Plus)) })
             }
             item {
-                ActionButton(text = "=", Modifier.size(70.dp, 106.dp))
+                ActionButton(text = "=", Modifier.size(70.dp, 106.dp), onClick = { onAction(CalculatorAction.Calculate) })
             }
         }
     }
@@ -162,14 +167,14 @@ fun ButtonsBlock() {
 
 
 @Composable
-fun ExpessionBlock(viewModel: ExpressionViewModel){
+fun ExpessionBlock(currentExpression: String, history: State<List<Expression>>){
     Column(
         Modifier
             .fillMaxWidth()
             .height(300.dp),
     horizontalAlignment = Alignment.End) {
-        History(viewModel.expressions.collectAsState())
-        Expression("100 + 200 = 500")
+        History(history)
+        Expression(currentExpression)
     }
 }
 
@@ -211,10 +216,11 @@ fun HistoryExpression(text: String, index: Int = 1){
 }
 
 @Composable
-fun Expression(text: String){
+fun Expression(expression: String){
     Text(
-        text = text,
+        text = expression,
         fontSize = 35.sp,
+        overflow = TextOverflow.Ellipsis,
         color = MaterialTheme.colorScheme.onPrimary,
         fontFamily = popinsFontFamily,
         fontStyle = FontStyle.Normal,
