@@ -17,6 +17,9 @@ class ExpressionViewModel(private val application: Application): AndroidViewMode
     private val _expressions = MutableStateFlow(emptyList<Expression>())
     val expressions: StateFlow<List<Expression>> get() = _expressions.asStateFlow()
 
+
+    val currentHistoryExpression = MutableStateFlow(emptyList<Expression>())
+
     init {
         val dao = AppDatabase.get(application).dao
         repository = ExpressionRepository(dao)
