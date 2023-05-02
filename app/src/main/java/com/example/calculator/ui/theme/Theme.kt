@@ -1,29 +1,30 @@
 package com.example.calculator.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = AnotherLightBlue,
-    onPrimary = DarkGray,
-    onSecondary = LightGray,
+    primary = Color(0xFF29A8FF),
+    onPrimary = Color.White,
+    onSecondary = Color(0xFF818181),
     secondary = LightBlue,
     tertiary = Pink40,
-    background = LightBackgroud,
-    surface = Color.White,
+    background = Color(0xFF17181A),
+    surface = Color(0xFF303136),
+    onSurface = Color(0xFF29A8FF),
+    surfaceVariant = Color(0xFF005DB2),
+    onSurfaceVariant = Color(0xFF339DFF)
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -35,39 +36,53 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = DarkGray,
     onSecondary = LightGray,
 
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
 
 
+
+//@Composable
+//fun MainTheme(
+//    darkTheme: Boolean = isSystemInDarkTheme(),
+//    // Dynamic color is available on Android 12+
+//    dynamicColor: Boolean = true,
+//    content: @Composable () -> Unit
+//) {
+//    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+//    val view = LocalView.current
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            val window = (view.context as Activity).window
+//            window.statusBarColor = colorScheme.background.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+//        }
+//    }
+//
+//    MaterialTheme(
+//        colorScheme = colorScheme,
+//        typography = Typography,
+//        content = content
+//    )
+//}
+
 @Composable
-fun CalculatorTheme(
+fun MainTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
-) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+){
+    val colors = if (darkTheme) darkPalette else lightPalette
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
+            window.statusBarColor = colors.background.toArgb()
+            window.navigationBarColor = colors.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+    CompositionLocalProvider(
+        LocalCalculatorColors provides colors,
         content = content
     )
 }

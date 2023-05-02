@@ -15,12 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calculator.ui.theme.CalculatorTheme
 
 @Composable
 fun ActionButton(text: String, modifier: Modifier, onClick: () -> Unit){
@@ -28,11 +31,10 @@ fun ActionButton(text: String, modifier: Modifier, onClick: () -> Unit){
         onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),
         contentPadding = PaddingValues(0.dp),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+        colors = ButtonDefaults.buttonColors(containerColor = CalculatorTheme.colors.secondarySurface),
         modifier = modifier
     ) {
-        Text(text = text, fontSize = 20.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.primary)
+        Text(text = text, fontSize = 30.sp, textAlign = TextAlign.Center, color = CalculatorTheme.colors.accentPrimary, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -41,9 +43,8 @@ fun ActionButton(text: String, modifier: Modifier, onClick: () -> Unit){
 fun NumButton(text: String, modifier: Modifier, onClick: () -> Unit){
     Button(
         onClick = { onClick() },
-        border = BorderStroke(1.dp, Color.White),
         shape = RoundedCornerShape(15.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.6f)),
+        colors = ButtonDefaults.buttonColors(containerColor = CalculatorTheme.colors.primarySurface.copy(alpha = 0.6f)),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
     ) {
@@ -51,22 +52,58 @@ fun NumButton(text: String, modifier: Modifier, onClick: () -> Unit){
 //            painter = painterResource(id = imageId),
 //            contentDescription = "",
 //            alignment = Alignment.Center)
-        Text(text = text, fontSize = 20.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.primary)
+        Text(text = text, fontSize = 28.sp, textAlign = TextAlign.Center, color = CalculatorTheme.colors.primary, fontWeight = FontWeight.Bold)
     }
 }
 
+@Composable
+fun VariantActionButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier, onClick: () -> Unit){
+    Button(
+        onClick = { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = CalculatorTheme.colors.variantSurface),
+        contentPadding = PaddingValues(0.dp),
+        modifier = modifier
+            .height(40.dp))
+    {
+        if (text != null)
+            Text(text = text, fontSize = 28.sp, textAlign = TextAlign.Center, color = CalculatorTheme.colors.variantText, fontWeight = FontWeight.Bold )
+        else if (imageId != null)
+            Image(painter = painterResource(id = imageId), contentDescription = "")
+    }
+}
 @Composable
 fun SpecialActionButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier, onClick: () -> Unit){
     Button(
         onClick = { onClick() },
         shape = RoundedCornerShape(20.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        colors = ButtonDefaults.buttonColors(containerColor = CalculatorTheme.colors.primarySurface),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
             .height(40.dp))
         {
         if (text != null)
-            Text(text = text, fontSize = 20.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.primary.copy(alpha = .8f))
+            Text(text = text, fontSize = 20.sp, textAlign = TextAlign.Center, color = CalculatorTheme.colors.accentSecondary)
+        else if (imageId != null)
+            Image(painter = painterResource(id = imageId), contentDescription = "")
+    }
+}
+
+@Composable
+fun EnterButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier, onClick: () -> Unit){
+    Button(
+        onClick = { onClick() },
+        shape = RoundedCornerShape(15.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = CalculatorTheme.colors.primary),
+        contentPadding = PaddingValues(0.dp),
+        modifier = modifier.shadow(
+            elevation = 5.dp,
+            spotColor = MaterialTheme.colorScheme.primary,
+            shape = RoundedCornerShape(20.dp)
+        ))
+    {
+        if (text != null)
+            Text(text = text, fontSize = 28.sp, textAlign = TextAlign.Center, color = Color.White, fontWeight = FontWeight.Bold)
         else if (imageId != null)
             Image(painter = painterResource(id = imageId), contentDescription = "")
     }

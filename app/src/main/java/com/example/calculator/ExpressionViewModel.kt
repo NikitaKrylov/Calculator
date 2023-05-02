@@ -64,22 +64,27 @@ class ExpressionViewModel(private val application: Application): AndroidViewMode
 
     private fun clear(){
         if (expression.isNotEmpty()) {
-            addExpression(Expression(0, expression, Date()))
             expression = ""
         }
     }
 
-    private fun calculate(string: String){
-        try {
-            val rez = ExpressionBuilder(string).build().evaluate()
-            addExpression(Expression(0, expression, Date()))
-            expression = "=${if (rez % 1 == 0.toDouble()) rez.toInt() else rez}"
-            calculated = true
+    private fun calculate(string: String) =
+        ExpressionBuilder(string).build().also { builder ->
+            if (builder.validate().isValid) {
+                builder.evaluate().also {
+                    addExpression(Expression(0, expression, Date()))
+                    expression = "=${if (it % 1 == 0.toDouble()) it.toInt() else it}"
+                    calculated = true
+                }
+            } else {
+                Toast.makeText(
+                    application.applicationContext,
+                    "Некорректное выражение",
+                    Toast.LENGTH_LONG
+                ).show()
 
-        } catch (e: IllegalArgumentException){
-            Toast.makeText(application.applicationContext, "Некорректное выражение", Toast.LENGTH_LONG).show()
+            }
         }
 
-    }
 
 }
