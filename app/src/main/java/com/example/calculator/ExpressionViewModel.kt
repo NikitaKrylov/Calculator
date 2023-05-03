@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import net.objecthunter.exp4j.ExpressionBuilder
+import java.lang.Exception
 import java.util.Date
 
 class ExpressionViewModel(private val application: Application): AndroidViewModel(application) {
@@ -68,22 +69,31 @@ class ExpressionViewModel(private val application: Application): AndroidViewMode
         }
     }
 
-    private fun calculate(string: String) =
-        ExpressionBuilder(string).build().also { builder ->
-            if (builder.validate().isValid) {
-                builder.evaluate().also {
-                    addExpression(Expression(0, expression, Date()))
-                    expression = "=${if (it % 1 == 0.toDouble()) it.toInt() else it}"
-                    calculated = true
-                }
-            } else {
-                Toast.makeText(
-                    application.applicationContext,
-                    "Некорректное выражение",
-                    Toast.LENGTH_LONG
-                ).show()
+    private fun calculate(string: String) {
+        try {
+            val builder = ExpressionBuilder(string).build()
+            addExpression(Expression(0, expression, Date()))
+            expression = builder.evaluate().toString()
+            calculated = true
+        } catch (e: Exception){
+            Toast.makeText(
+                application.applicationContext,
+                "Некорректное выражение",
+                Toast.LENGTH_LONG
+            ).show()
+        }
 
-            }
+//        ExpressionBuilder(string).build().also { builder ->
+//            if (builder.validate().isValid) {
+//                builder.evaluate().also {
+//                    addExpression(Expression(0, expression, Date()))
+//                    expression = "=${if (it % 1 == 0.toDouble()) it.toBits() else it}"
+//                    calculated = true
+//                }
+//            } else {
+//
+//
+//            }
         }
 
 

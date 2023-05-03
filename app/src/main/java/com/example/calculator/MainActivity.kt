@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,9 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.example.calculator.ui.theme.CalculatorTheme
 import com.example.calculator.ui.theme.MainTheme
 import com.example.calculator.ui.theme.popinsFontFamily
@@ -45,12 +49,30 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     color = CalculatorTheme.colors.background
                 ) {
-                    Column(verticalArrangement = Arrangement.SpaceBetween, horizontalAlignment= Alignment.End, modifier = Modifier
-                        .padding(28.dp, 8.dp)
-                        .fillMaxSize()) {
-                        HistoryBlock(history = exprViewModel.expressions.collectAsState())
-                        ExpressionBlock(expression = exprViewModel.expression)
-                        ButtonsBlock(exprViewModel::onAction)
+                    ConstraintLayout(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 10.dp)) {
+
+                        val (history, expression, buttons) = createRefs()
+                        HistoryBlock(history = exprViewModel.expressions.collectAsState(), Modifier.constrainAs(history){
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(expression.top)
+                            height = Dimension.fillToConstraints
+                            width = Dimension.matchParent
+                        })
+                        ExpressionBlock(expression = exprViewModel.expression, Modifier.constrainAs(expression){
+                            top.linkTo(history.bottom)
+                            end.linkTo(parent.end)
+                            height = Dimension.wrapContent
+                            width = Dimension.matchParent
+                            bottom.linkTo(buttons.top)
+                        })
+                        ButtonsBlock(exprViewModel::onAction, Modifier.constrainAs(buttons){
+                            start.linkTo(parent.start)
+                            bottom.linkTo(parent.bottom)
+                            height = Dimension.wrapContent
+                            width = Dimension.matchParent
+                        })
                     }
                 }
             }
@@ -60,8 +82,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ButtonsBlock(onAction: (CalculatorAction) -> Unit) {
-    Column(verticalArrangement = Arrangement.Bottom) {
+fun ButtonsBlock(onAction: (CalculatorAction) -> Unit, modifier: Modifier = Modifier) {
+    Column(verticalArrangement = Arrangement.Bottom, modifier = modifier) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(4),
             horizontalArrangement = Arrangement.spacedBy(15.dp),
@@ -124,7 +146,7 @@ fun ButtonsBlock(onAction: (CalculatorAction) -> Unit) {
 
                 EnterButton(text = "=",
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .aspectRatio(.55f, true),
                     onClick = { onAction(CalculatorAction.Calculate) })
             }
         }
@@ -137,13 +159,10 @@ fun ButtonsBlock(onAction: (CalculatorAction) -> Unit) {
 
 
 @Composable
-fun HistoryBlock(history: State<List<Expression>>){
+fun HistoryBlock(history: State<List<Expression>>, modifier: Modifier = Modifier){
 //    val expressions = (1..10).map { it.toString() }.toList()
     LazyColumn(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(150.dp, 240.dp)
-            .padding(horizontal = 5.dp),
+        Modifier.then(modifier),
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
         reverseLayout = true,
@@ -173,7 +192,7 @@ fun HistoryItem(text: String, index: Int = 1){
 }
 
 @Composable
-fun ExpressionBlock(expression: String){
+fun ExpressionBlock(expression: String, modifier: Modifier = Modifier){
     Text(
         text = expression,
         fontSize = 35.sp,
@@ -181,7 +200,8 @@ fun ExpressionBlock(expression: String){
         color = CalculatorTheme.colors.primaryText,
         fontFamily = popinsFontFamily,
         fontStyle = FontStyle.Normal,
-        modifier = Modifier
+        textAlign = TextAlign.End,
+        modifier = Modifier.then(modifier)
             .padding(vertical = 17.dp)
     )
 }
