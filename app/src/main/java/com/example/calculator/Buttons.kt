@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.calculator.ui.theme.CalculatorTheme
 
 @Composable
-fun ActionButton(text: String, modifier: Modifier, onClick: () -> Unit){
+fun ActionButton(text: String, modifier: Modifier, onClick: () -> Unit = {}){
     Button(
         onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),
@@ -40,7 +40,7 @@ fun ActionButton(text: String, modifier: Modifier, onClick: () -> Unit){
 
 
 @Composable
-fun NumButton(text: String, modifier: Modifier, onClick: () -> Unit){
+fun NumButton(text: String, modifier: Modifier, onClick: () -> Unit = {}){
     Button(
         onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),
@@ -60,7 +60,7 @@ fun NumButton(text: String, modifier: Modifier, onClick: () -> Unit){
 fun VariantActionButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier, onClick: () -> Unit){
     Button(
         onClick = { onClick() },
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(containerColor = CalculatorTheme.colors.variantSurface),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
@@ -90,7 +90,7 @@ fun SpecialActionButton(imageId: Int? = null, text: String? = null, modifier: Mo
 }
 
 @Composable
-fun EnterButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier, onClick: () -> Unit){
+fun EnterButton(imageId: Int? = null, text: String? = null, modifier: Modifier = Modifier, onClick: () -> Unit = {}){
     Button(
         onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),

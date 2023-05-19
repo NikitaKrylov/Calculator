@@ -1,13 +1,10 @@
 package com.example.calculator
 
 import android.app.Application
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +21,8 @@ class ExpressionViewModel(private val application: Application): AndroidViewMode
     private val _expressions = MutableStateFlow(emptyList<Expression>())
     val expressions: StateFlow<List<Expression>> get() = _expressions.asStateFlow()
     var expression by mutableStateOf("")
-    private var calculated: Boolean = false
+    private var cleanForNext: Boolean = false
+    private var memoryStore: String? = null
 
 
     init {
@@ -50,9 +48,9 @@ class ExpressionViewModel(private val application: Application): AndroidViewMode
     }
 
     fun onAction(action: CalculatorAction){
-        if (calculated){
+        if (cleanForNext){
             expression = ""
-            calculated = false
+            cleanForNext = false
         }
         when (action){
             is CalculatorAction.Symbol -> expression += action.value
@@ -60,6 +58,8 @@ class ExpressionViewModel(private val application: Application): AndroidViewMode
             is CalculatorAction.Delete -> expression = expression.dropLast(1)
             is CalculatorAction.Clear -> clear()
             is CalculatorAction.Calculate -> calculate(expression)
+            is CalculatorAction.MemoryRecall -> {}
+            is CalculatorAction.MemoryStore -> {}
         }
     }
 
@@ -69,18 +69,19 @@ class ExpressionViewModel(private val application: Application): AndroidViewMode
         }
     }
 
+    private fun memoryRecall(value: String?){
+        expression += value ?: ""
+
+    }
+
     private fun calculate(string: String) {
         try {
-            val builder = ExpressionBuilder(string).build()
+            val result = ExpressionBuilder(string).build().evaluate()
             addExpression(Expression(0, expression, Date()))
-            expression = builder.evaluate().toString()
-            calculated = true
+            expression = result.toString()
         } catch (e: Exception){
-            Toast.makeText(
-                application.applicationContext,
-                "Некорректное выражение",
-                Toast.LENGTH_LONG
-            ).show()
+            expression = "Ошибка"
+            cleanForNext = true
         }
 
 //        ExpressionBuilder(string).build().also { builder ->
